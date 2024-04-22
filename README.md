@@ -2,7 +2,7 @@
 
 This is a codebased use to create simulations visualisations and benchmark tests on physics simulations.
 
-Dependencies:
+#### Dependencies
 - matplotlib
 - graphics
 - re
