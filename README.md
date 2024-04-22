@@ -8,6 +8,7 @@ This is a codebased use to create simulations visualisations and benchmark tests
 - re
 - math
 - numpy
+- copy
 
 #### Refrences
 
