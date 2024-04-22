@@ -292,26 +292,27 @@ class Integrator:
 
     def rk4(self, particle, state, force, dt):
         """Input (Particle), (SystemState), (Force), timestep (float) return next (Particle)"""
+        mass = particle.get_mass()
         k1 = force.calculate(particle, state)
         k2_particle = Particle(
             particle.get_position() + 0.5 * particle.get_velocity() * dt,
-            particle.get_velocity() + 0.5 * k1 * dt,
+            particle.get_velocity() + 0.5 * k1 * dt / mass,
             particle.get_mass())
         k2 = force.calculate(k2_particle, state)
         k3_particle = Particle(
             particle.get_position() + 0.5 * k2_particle.get_velocity() * dt,
-            particle.get_velocity() + 0.5 * k2 * dt,
+            particle.get_velocity() + 0.5 * k2 * dt / mass,
             particle.get_mass())
         k3 = force.calculate(k3_particle, state)
         k4_particle = Particle(
             particle.get_position() + k3_particle.get_velocity() * dt,
-            particle.get_velocity() + k3 * dt,
+            particle.get_velocity() + k3 * dt / mass,
             particle.get_mass())
         k4 = force.calculate(k4_particle, state)
-        particle_force = (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+        particle_force = (1/(6 * mass)) * (k1 + 2*k2 + 2*k3 + k4)
         acceleration = particle_force / particle.get_mass()
         velocity = particle.get_velocity() + acceleration * dt
-        position = particle.get_position() + particle.get_velocity() * dt
+        position = particle.get_position() + velocity * dt
         return Particle(position, velocity, particle.get_mass())
         
         
