@@ -265,7 +265,7 @@ class Integrator:
         """Input (Particle), (SystemState), (Force), timestep (float) return next (Particle)"""
         position = particle.get_position() + particle.get_velocity() * dt
         test_particle = Particle(position, particle.get_velocity(), particle.get_mass())
-        particle_force = force.calculate(particle, state)
+        particle_force = force.calculate(test_particle, state)
         acceleration = particle_force / particle.get_mass()
         velocity = particle.get_velocity() + acceleration * dt
         return Particle(position, velocity, particle.get_mass())
@@ -309,10 +309,22 @@ class Integrator:
             particle.get_velocity() + k3 * dt / mass,
             particle.get_mass())
         k4 = force.calculate(k4_particle, state)
-        particle_force = (1/(6 * mass)) * (k1 + 2*k2 + 2*k3 + k4)
+        particle_force = (1/6) * (k1 + 2*k2 + 2*k3 + k4)
         acceleration = particle_force / particle.get_mass()
         velocity = particle.get_velocity() + acceleration * dt
-        position = particle.get_position() + velocity * dt
+        position = particle.get_position() + particle.get_velocity() * dt
+        return Particle(position, velocity, particle.get_mass())
+
+    def verlet(self, particle, state, force, dt):
+        """Input (Particle), (SystemState), (Force), timestep (float) return next (Particle)"""
+        # Not included in report due to time constrains
+        position = particle.get_position() + particle.get_velocity() * dt
+        test_particle = Particle(position, particle.get_velocity(), particle.get_mass())
+        test_particle_force = force.calculate(test_particle, state)
+        particle_force = force.calculate(particle, state)
+        acceleration = (test_particle_force + particle_force) / (dt * 2)
+        velocity = particle.get_velocity() + acceleration * dt
+        position = particle.get_position() + particle.get_velocity() * dt + (particle_force / 2 * particle.get_mass()) * (dt ** 2) 
         return Particle(position, velocity, particle.get_mass())
         
         
@@ -430,5 +442,7 @@ class System:
     def get_energies(self):
         energy_list = [ state.get_energy() for state in self.states]
         return energy_list
+
+
 
 
